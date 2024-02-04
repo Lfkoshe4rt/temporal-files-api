@@ -9,19 +9,22 @@ const upload = async (file: IFile, body: IBody) => {
   const { convertToMilliseconds } = convert();
 
   const { filename } = file;
-  const { minutes = 1, privateFile = false } = body;
+  const { minutes = 1, privateFile = false, permanentFile = false } = body;
+
   const milliseconds = convertToMilliseconds(minutes);
 
-  setTimeout(() => {
-    if (file.path) {
-      fs.unlinkSync(file.path);
-    }
-  }, milliseconds);
+  if (!permanentFile) {
+    setTimeout(() => {
+      if (file.path) {
+        fs.unlinkSync(file.path);
+      }
+    }, milliseconds);
+  }
 
   const fileResponse = {
     message: "File uploaded successfully",
     url: `${process.env.URL}/download/${filename}`,
-    time: minutes,
+    time: permanentFile ? "Permanent" : `${minutes} minutes`,
     status: privateFile ? "private" : "public",
     password: privateFile ? randomUUID() : "Not required",
   };
