@@ -130,4 +130,5 @@ dist
 .pnp.*
 
 #pnpm
-.pnpm-lock.yaml
+pnpm-lock.yaml
+.vscode
