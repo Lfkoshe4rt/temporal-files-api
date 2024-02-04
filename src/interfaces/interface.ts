@@ -12,4 +12,5 @@ export interface IFile {
 export interface IBody {
   minutes: number;
   privateFile: boolean;
+  permanentFile: boolean;
 }
