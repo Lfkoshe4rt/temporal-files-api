@@ -14,14 +14,6 @@ const upload = async (file: IFile, body: IBody) => {
 
   const milliseconds = convertToMilliseconds(minutes);
 
-  if (!permanentFile) {
-    setTimeout(() => {
-      if (file.path) {
-        fs.unlinkSync(file.path);
-      }
-    }, milliseconds);
-  }
-
   const response = await File.create({
     name: filename.split(".")[0],
     size: file.size,
@@ -30,6 +22,16 @@ const upload = async (file: IFile, body: IBody) => {
     permanent: !!permanentFile,
     private: !!privateFile,
   });
+
+  if (!permanentFile) {
+    setTimeout(async () => {
+      if (file.path) {
+        fs.unlinkSync(file.path);
+
+        await File.findByIdAndDelete(response._id);
+      }
+    }, milliseconds);
+  }
 
   return response;
 };
