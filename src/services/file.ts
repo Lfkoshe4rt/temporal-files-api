@@ -54,14 +54,14 @@ const allFiles = async () => {
   const filesInfo = files.map((file) => {
     const { size, birthtime: created } = fs.statSync(`${pathFile}/${file}`);
 
-    const info = {
+    const fileInfo = {
       name: file.split(".")[0],
       url: `${process.env.URL}/download/${file}`,
       size: convertToUnits(size),
       created,
     };
 
-    return info;
+    return fileInfo;
   });
 
   return filesInfo;
