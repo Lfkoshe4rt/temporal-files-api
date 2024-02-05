@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { convert } from "../utils/formate";
+import File from "../models/file";
 
 import { IBody, IFile } from "../interfaces/interface";
 
@@ -21,15 +22,16 @@ const upload = async (file: IFile, body: IBody) => {
     }, milliseconds);
   }
 
-  const fileResponse = {
-    message: "File uploaded successfully",
+  const response = await File.create({
+    name: filename.split(".")[0],
+    size: file.size,
+    key: privateFile ? randomUUID() : "Not required",
     url: `${process.env.URL}/download/${filename}`,
-    time: permanentFile ? "Permanent" : `${minutes} minutes`,
-    status: privateFile ? "private" : "public",
-    password: privateFile ? randomUUID() : "Not required",
-  };
+    permanent: !!permanentFile,
+    private: !!privateFile,
+  });
 
-  return fileResponse;
+  return response;
 };
 
 const download = async (name: string) => {
