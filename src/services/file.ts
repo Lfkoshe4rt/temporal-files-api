@@ -51,21 +51,18 @@ const download = async (name: string) => {
 const allFiles = async () => {
   const { convertToUnits } = convert();
 
-  const pathFile = path.join(__dirname, `../uploads`);
-
-  const files = fs.readdirSync(pathFile);
+  const files = await File.find();
 
   const filesInfo = files.map((file) => {
-    const { size, birthtime: created } = fs.statSync(`${pathFile}/${file}`);
+    const { name, size, url, permanent, private: isPrivate } = file;
 
-    const fileInfo = {
-      name: file.split(".")[0],
-      url: `${process.env.URL}/download/${file}`,
+    return {
+      name,
       size: convertToUnits(size),
-      created,
+      url,
+      permanent,
+      private: isPrivate,
     };
-
-    return fileInfo;
   });
 
   return filesInfo;
