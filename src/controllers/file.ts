@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IBody, IFile } from "../interfaces/interface";
-import { allFiles, download, upload } from "../services/file";
+import { allFiles, download, deleteOne, upload } from "../services/file";
 
 const uploadFile = async (req: Request, res: Response) => {
   const { file, body } = req;
@@ -31,4 +31,16 @@ const listFiles = async (req: Request, res: Response) => {
   res.status(200).json(response);
 };
 
-export { downloadFile, listFiles, uploadFile };
+const deleteFile = async (req: Request, res: Response) => {
+  const { name } = req.params;
+
+  try {
+    const response = await deleteOne(name);
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ message: "File not found" });
+  }
+};
+
+export { deleteFile, downloadFile, listFiles, uploadFile };
