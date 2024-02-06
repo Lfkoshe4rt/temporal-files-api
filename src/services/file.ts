@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { convert } from "../utils/formate";
 import File from "../models/file";
+import { convert } from "../utils/formate";
 
 import { IBody, IFile } from "../interfaces/interface";
 
@@ -68,4 +68,17 @@ const allFiles = async () => {
   return filesInfo;
 };
 
-export { allFiles, download, upload };
+const deleteOne = async (name: string) => {
+  const file = await File.findByIdAndDelete({ name });
+  const pathFile = path.join(__dirname, `../uploads/${name}`);
+
+  if (!file) {
+    throw new Error("File not found");
+  }
+
+  fs.unlinkSync(pathFile);
+
+  return file;
+};
+
+export { allFiles, deleteOne, download, upload };
