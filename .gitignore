@@ -133,4 +133,4 @@ dist
 pnpm-lock.yaml
 .vscode
 
-src/uploads
+src/storage
