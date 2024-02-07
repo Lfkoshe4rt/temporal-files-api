@@ -2,7 +2,7 @@ import multer from "multer";
 import path from "path";
 
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../uploads"),
+  destination: path.join(__dirname, "../storage"),
   filename: (req, file, cb) => {
     const fileName = file.originalname.split(".")[0];
     const uniqueSuffix = `${fileName}-${Date.now()}-${Math.round(
