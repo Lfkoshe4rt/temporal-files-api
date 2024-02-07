@@ -9,13 +9,13 @@ import { IBody, IFile } from "../interfaces/interface";
 const upload = async (file: IFile, body: IBody) => {
   const { convertToMilliseconds } = convert();
 
-  const { filename } = file;
+  const { filename, originalname } = file;
   const { minutes = 1, privateFile = false, permanentFile = false } = body;
 
   const milliseconds = convertToMilliseconds(minutes);
 
   const response = await File.create({
-    name: filename.split(".")[0],
+    name: originalname.split(".")[0],
     size: file.size,
     key: privateFile ? randomUUID() : "Not required",
     url: `${process.env.URL}/download/${filename}`,
@@ -54,14 +54,24 @@ const allFiles = async () => {
   const files = await File.find();
 
   const filesInfo = files.map((file) => {
-    const { name, size, url, permanent, private: isPrivate } = file;
+    const {
+      _id,
+      name,
+      size,
+      url,
+      permanent,
+      private: isPrivate,
+      createdAt,
+    } = file;
 
     return {
+      id: _id,
       name,
       size: convertToUnits(size),
       url,
       permanent,
       private: isPrivate,
+      createdAt,
     };
   });
 
