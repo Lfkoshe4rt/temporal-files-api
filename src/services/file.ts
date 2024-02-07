@@ -37,7 +37,7 @@ const upload = async (file: IFile, body: IBody) => {
 };
 
 const download = async (name: string) => {
-  const pathFile = path.join(__dirname, `../uploads/${name}`);
+  const pathFile = path.join(__dirname, `../storage/${name}`);
 
   const fileExists = fs.existsSync(pathFile);
 
@@ -80,7 +80,7 @@ const allFiles = async () => {
 
 const deleteOne = async (name: string) => {
   const file = await File.findByIdAndDelete({ name });
-  const pathFile = path.join(__dirname, `../uploads/${name}`);
+  const pathFile = path.join(__dirname, `../storage/${name}`);
 
   if (!file) {
     throw new Error("File not found");
