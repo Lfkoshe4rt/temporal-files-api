@@ -4,6 +4,7 @@ import {
   downloadFile,
   listFiles,
   deleteFile,
+  oneFile,
 } from "../controllers/file";
 import { upload } from "../middlewares/fileUpload";
 
@@ -16,5 +17,7 @@ router.get("/download/:name", downloadFile);
 router.get("/files", listFiles);
 
 router.delete("/delete/:name", deleteFile);
+
+router.get("/file/:id", oneFile);
 
 export default router;
