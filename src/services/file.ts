@@ -21,7 +21,10 @@ const upload = async (file: IFile, body: IBody) => {
     url: `${process.env.URL}/download/${filename}`,
     permanent: !!permanentFile,
     private: !!privateFile,
+    time: minutes,
   });
+
+  console.log(response);
 
   if (!permanentFile) {
     setTimeout(async () => {
@@ -91,4 +94,14 @@ const deleteOne = async (name: string) => {
   return file;
 };
 
-export { allFiles, deleteOne, download, upload };
+const getOne = async (id: string) => {
+  const file = await File.findById(id);
+
+  if (!file) {
+    throw new Error("File not found");
+  }
+
+  return file;
+};
+
+export { allFiles, deleteOne, download, upload, getOne };
