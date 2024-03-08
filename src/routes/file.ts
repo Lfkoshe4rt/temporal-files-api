@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
   uploadFile,
   downloadFile,
-  listFiles,
   deleteFile,
   oneFile,
 } from "../controllers/file";
@@ -12,9 +11,7 @@ const router = Router();
 
 router.post("/upload", upload.single("file"), uploadFile);
 
-router.get("/download/:name", downloadFile);
-
-router.get("/files", listFiles);
+router.get("/download/:id", downloadFile);
 
 router.delete("/delete/:name", deleteFile);
 
