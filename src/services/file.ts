@@ -14,33 +14,55 @@ const upload = async (file: IFile, body: IBody) => {
 
   const milliseconds = convertToMilliseconds(minutes);
 
-  const response = await File.create({
-    name: originalname.split(".")[0],
-    size: file.size,
-    key: privateFile ? randomUUID() : "Not required",
-    url: `${process.env.URL}/download/${filename}`,
-    permanent: !!permanentFile,
-    private: !!privateFile,
-    time: minutes,
-  });
+  const createResponseObject = (response: any) => {
+    const { _id, name, createdAt, key } = response;
+    return { _id, name, createdAt, key };
+  };
 
-  console.log(response);
+  try {
+    const response = await File.create({
+      name: originalname.split(".")[0],
+      size: file.size,
+      key: privateFile ? randomUUID() : "Not required",
+      url: `${process.env.URL}/download/${filename}`,
+      permanent: !!permanentFile,
+      private: !!privateFile,
+      time: minutes,
+    });
 
-  if (!permanentFile) {
-    setTimeout(async () => {
-      if (file.path) {
-        fs.unlinkSync(file.path);
+    if (!permanentFile) {
+      setTimeout(async () => {
+        try {
+          if (file.path) {
+            fs.unlinkSync(file.path);
+            await File.findByIdAndDelete(response._id);
+            console.log("File deleted successfully");
+          }
+        } catch (error) {
+          console.error("Error deleting file:", error);
+        }
+      }, milliseconds);
+    }
 
-        await File.findByIdAndDelete(response._id);
-      }
-    }, milliseconds);
+    return createResponseObject(response);
+  } catch (error) {
+    console.error("Error saving file:", error);
+    throw new Error("Failed to save file");
   }
-
-  return response;
 };
 
-const download = async (name: string) => {
-  const pathFile = path.join(__dirname, `../storage/${name}`);
+const download = async (id: string) => {
+  const file = await File.findById(id);
+
+  console.log(file);
+
+  if (!file) {
+    throw new Error("File not found");
+  }
+
+  const { url } = file;
+
+  const pathFile = path.join(__dirname, `../storage/${url.split("/").pop()}`);
 
   const fileExists = fs.existsSync(pathFile);
 
@@ -49,36 +71,6 @@ const download = async (name: string) => {
   }
 
   return pathFile;
-};
-
-const allFiles = async () => {
-  const { convertToUnits } = convert();
-
-  const files = await File.find();
-
-  const filesInfo = files.map((file) => {
-    const {
-      _id,
-      name,
-      size,
-      url,
-      permanent,
-      private: isPrivate,
-      createdAt,
-    } = file;
-
-    return {
-      id: _id,
-      name,
-      size: convertToUnits(size),
-      url,
-      permanent,
-      private: isPrivate,
-      createdAt,
-    };
-  });
-
-  return filesInfo;
 };
 
 const deleteOne = async (name: string) => {
@@ -94,14 +86,20 @@ const deleteOne = async (name: string) => {
   return file;
 };
 
-const getOne = async (id: string) => {
+const getOne = async (id: string, key: string) => {
   const file = await File.findById(id);
 
   if (!file) {
     throw new Error("File not found");
   }
 
+  if (file.private) {
+    if (file.key !== key) {
+      throw new Error("File not found");
+    }
+  }
+
   return file;
 };
 
-export { allFiles, deleteOne, download, upload, getOne };
+export { deleteOne, download, upload, getOne };
