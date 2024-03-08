@@ -1,12 +1,6 @@
 import { Request, Response } from "express";
 import { IBody, IFile } from "../interfaces/interface";
-import {
-  allFiles,
-  download,
-  deleteOne,
-  upload,
-  getOne,
-} from "../services/file";
+import { download, deleteOne, upload, getOne } from "../services/file";
 
 const uploadFile = async (req: Request, res: Response) => {
   const { file, body } = req;
@@ -21,9 +15,10 @@ const uploadFile = async (req: Request, res: Response) => {
 
 const oneFile = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { key = "" } = req.query;
 
   try {
-    const response = await getOne(id);
+    const response = await getOne(id, key as string);
 
     res.status(200).json(response);
   } catch (error) {
@@ -32,21 +27,15 @@ const oneFile = async (req: Request, res: Response) => {
 };
 
 const downloadFile = async (req: Request, res: Response) => {
-  const { name } = req.params;
+  const { id } = req.params;
 
   try {
-    const response = await download(name);
+    const response = await download(id);
 
     res.download(response.toString());
   } catch (error) {
     res.status(400).json({ message: "File not found" });
   }
-};
-
-const listFiles = async (req: Request, res: Response) => {
-  const response = await allFiles();
-
-  res.status(200).json(response);
 };
 
 const deleteFile = async (req: Request, res: Response) => {
@@ -61,4 +50,4 @@ const deleteFile = async (req: Request, res: Response) => {
   }
 };
 
-export { deleteFile, downloadFile, listFiles, uploadFile, oneFile };
+export { deleteFile, downloadFile, uploadFile, oneFile };
