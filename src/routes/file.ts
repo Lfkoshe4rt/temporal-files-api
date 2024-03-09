@@ -1,9 +1,9 @@
 import { Router } from "express";
 import {
-  uploadFile,
-  downloadFile,
   deleteFile,
+  downloadFile,
   oneFile,
+  uploadFile,
 } from "../controllers/file";
 import { upload } from "../middlewares/fileUpload";
 
