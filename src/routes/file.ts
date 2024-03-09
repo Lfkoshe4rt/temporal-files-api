@@ -13,7 +13,7 @@ router.post("/upload", upload.single("file"), uploadFile);
 
 router.get("/download/:id", downloadFile);
 
-router.delete("/delete/:name", deleteFile);
+router.delete("/delete/:id", deleteFile);
 
 router.get("/file/:id", oneFile);
 
