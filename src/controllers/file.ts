@@ -39,10 +39,10 @@ const downloadFile = async (req: Request, res: Response) => {
 };
 
 const deleteFile = async (req: Request, res: Response) => {
-  const { name } = req.params;
+  const { id } = req.params;
 
   try {
-    const response = await deleteOne(name);
+    const response = await deleteOne(id);
 
     res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
