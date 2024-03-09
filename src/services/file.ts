@@ -54,10 +54,8 @@ const upload = async (file: IFile, body: IBody) => {
 const download = async (id: string) => {
   const file = await File.findById(id);
 
-  console.log(file);
-
   if (!file) {
-    throw new Error("File not found");
+    throw new Error(`File not found`);
   }
 
   const { url } = file;
@@ -81,25 +79,27 @@ const deleteOne = async (name: string) => {
     throw new Error("File not found");
   }
 
+  if (!fs.existsSync(pathFile)) {
+    throw new Error(`File not found at path`);
+  }
+
   fs.unlinkSync(pathFile);
 
   return file;
 };
 
-const getOne = async (id: string, key: string) => {
+const getOne = async (id: string, key: string | undefined) => {
   const file = await File.findById(id);
 
   if (!file) {
-    throw new Error("File not found");
+    throw new Error(`File not found for id: ${id}`);
   }
 
-  if (file.private) {
-    if (file.key !== key) {
-      throw new Error("File not found");
-    }
+  if (file.private && file.key !== key) {
+    throw new Error("Unauthorized access");
   }
 
   return file;
 };
 
-export { deleteOne, download, upload, getOne };
+export { deleteOne, download, getOne, upload };
