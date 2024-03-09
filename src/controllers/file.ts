@@ -7,22 +7,22 @@ const uploadFile = async (req: Request, res: Response) => {
 
   try {
     const response = await upload(file as IFile, body as IBody);
-    res.status(200).json(response);
+    res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
-    res.status(400).json({ message: "File is required" });
+    res.status(400).json({ status: "FAILED", message: "File is required" });
   }
 };
 
 const oneFile = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { key = "" } = req.query;
+  const { key } = req.query;
 
   try {
-    const response = await getOne(id, key as string);
+    const response = await getOne(id, key as string | undefined);
 
-    res.status(200).json(response);
+    res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
-    res.status(400).json({ message: "File not found" });
+    res.status(400).json({ status: "FAILED", message: "File not found" });
   }
 };
 
@@ -34,7 +34,7 @@ const downloadFile = async (req: Request, res: Response) => {
 
     res.download(response.toString());
   } catch (error) {
-    res.status(400).json({ message: "File not found" });
+    res.status(400).json({ status: "FAILED", message: "File not found" });
   }
 };
 
@@ -44,9 +44,9 @@ const deleteFile = async (req: Request, res: Response) => {
   try {
     const response = await deleteOne(name);
 
-    res.status(200).json(response);
+    res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
-    res.status(400).json({ message: "File not found" });
+    res.status(400).json({ status: "FAILED", message: "File not found" });
   }
 };
 
