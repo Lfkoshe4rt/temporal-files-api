@@ -71,13 +71,17 @@ const download = async (id: string) => {
   return pathFile;
 };
 
-const deleteOne = async (name: string) => {
-  const file = await File.findByIdAndDelete({ name });
-  const pathFile = path.join(__dirname, `../storage/${name}`);
+const deleteOne = async (id: string) => {
+  const file = await File.findByIdAndDelete(id);
 
   if (!file) {
     throw new Error("File not found");
   }
+
+  const pathFile = path.join(
+    __dirname,
+    `../storage/${file.url.split("/").pop()}`
+  );
 
   if (!fs.existsSync(pathFile)) {
     throw new Error(`File not found at path`);
