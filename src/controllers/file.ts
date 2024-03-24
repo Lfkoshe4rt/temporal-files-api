@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
-import { IBody, IFile } from "../interfaces/interface";
-import { download, deleteOne, upload, getOne } from "../services/file";
+import { IBody, IFile, ICustomError } from "../interfaces/interface";
+import {
+  download,
+  deleteOne,
+  upload,
+  getOne,
+  getPrivateFile,
+} from "../services/file";
 
 const uploadFile = async (req: Request, res: Response) => {
   const { file, body } = req;
@@ -15,10 +21,22 @@ const uploadFile = async (req: Request, res: Response) => {
 
 const oneFile = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { key } = req.query;
 
   try {
-    const response = await getOne(id, key as string | undefined);
+    const response = await getOne(id);
+
+    res.status(200).json({ status: "SUCCESS", data: response });
+  } catch (error) {
+    res.status(400).json({ status: "FAILED", message: "File not found" });
+  }
+};
+
+const onePrivateFile = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { key = "" } = req.body;
+
+  try {
+    const response = await getPrivateFile(id, key as string | undefined);
 
     res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
@@ -50,4 +68,4 @@ const deleteFile = async (req: Request, res: Response) => {
   }
 };
 
-export { deleteFile, downloadFile, uploadFile, oneFile };
+export { deleteFile, downloadFile, uploadFile, oneFile, onePrivateFile };
