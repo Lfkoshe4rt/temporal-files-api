@@ -4,7 +4,7 @@ import path from "node:path";
 import File from "../models/file";
 import { convert } from "../utils/formate";
 
-import { IBody, IFile, ICustomError } from "../interfaces/interface";
+import { IBody, IFile } from "../interfaces/interface";
 
 const upload = async (file: IFile, body: IBody) => {
   const { convertToMilliseconds } = convert();
