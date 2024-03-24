@@ -12,11 +12,13 @@ const app = express();
 
 conectDB();
 
+app.use(express.json());
+
 app.use(cors());
 
 app.use(morgan("dev"));
 
-app.use("/", file)
+app.use("/", file);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
