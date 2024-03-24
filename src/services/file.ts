@@ -4,7 +4,7 @@ import path from "node:path";
 import File from "../models/file";
 import { convert } from "../utils/formate";
 
-import { IBody, IFile } from "../interfaces/interface";
+import { IBody, IFile, ICustomError } from "../interfaces/interface";
 
 const upload = async (file: IFile, body: IBody) => {
   const { convertToMilliseconds } = convert();
@@ -15,8 +15,8 @@ const upload = async (file: IFile, body: IBody) => {
   const milliseconds = convertToMilliseconds(minutes);
 
   const createResponseObject = (response: any) => {
-    const { _id, name, createdAt, key } = response;
-    return { _id, name, createdAt, key };
+    const { _id, name, createdAt, key, private: isPrivate } = response;
+    return { _id, name, createdAt, key, private: isPrivate };
   };
 
   try {
@@ -92,18 +92,32 @@ const deleteOne = async (id: string) => {
   return file;
 };
 
-const getOne = async (id: string, key: string | undefined) => {
+const getOne = async (id: string) => {
   const file = await File.findById(id);
 
   if (!file) {
     throw new Error(`File not found for id: ${id}`);
   }
 
-  if (file.private && file.key !== key) {
+  if (file.private) {
     throw new Error("Unauthorized access");
   }
 
   return file;
 };
 
-export { deleteOne, download, getOne, upload };
+const getPrivateFile = async (id: string, key: string | undefined) => {
+  const file = await File.findById(id);
+
+  if (!file) {
+    throw new Error(`File not found for id: ${id}`);
+  }
+
+  if (file.key !== key) {
+    throw new Error("Unauthorized access");
+  }
+
+  return file;
+};
+
+export { deleteOne, download, getOne, upload, getPrivateFile };
