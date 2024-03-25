@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IBody, IFile, ICustomError } from "../interfaces/interface";
+import { IBody, IFile } from "../interfaces/interface";
 import {
   download,
   deleteOne,
