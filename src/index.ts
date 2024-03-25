@@ -2,9 +2,10 @@ import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
-import conectDB from "./config/database";
+import conectDB from "@/config/database";
+import { errorHandlerMiddleware } from "@/middlewares/errorHandler";
 
-import file from "./routes/file";
+import file from "@/routes/file";
 
 const PORT = process.env.PORT || 0;
 
@@ -19,6 +20,8 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.use("/", file);
+
+app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
