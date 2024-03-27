@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import File from "../models/file";
-import { convert } from "../utils/formate";
+import File from "@/models/file";
+import { convert } from "@/utils/formate";
 
-import { IBody, IFile } from "../interfaces/interface";
+import { IBody, IFile } from "@/interfaces/interface";
 
 const upload = async (file: IFile, body: IBody) => {
   const { convertToMilliseconds } = convert();
@@ -36,7 +36,6 @@ const upload = async (file: IFile, body: IBody) => {
           if (file.path) {
             fs.unlinkSync(file.path);
             await File.findByIdAndDelete(response._id);
-            console.log("File deleted successfully");
           }
         } catch (error) {
           console.error("Error deleting file:", error);
@@ -52,72 +51,87 @@ const upload = async (file: IFile, body: IBody) => {
 };
 
 const download = async (id: string) => {
-  const file = await File.findById(id);
+  try {
+    const file = await File.findById(id);
 
-  if (!file) {
-    throw new Error(`File not found`);
+    if (!file) {
+      throw new Error(`File not found`);
+    }
+
+    const { url } = file;
+
+    const pathFile = path.join(__dirname, `../storage/${url.split("/").pop()}`);
+
+    const fileExists = fs.existsSync(pathFile);
+
+    if (!fileExists) {
+      throw new Error("File not found");
+    }
+
+    return pathFile;
+  } catch (error) {
+    throw error;
   }
-
-  const { url } = file;
-
-  const pathFile = path.join(__dirname, `../storage/${url.split("/").pop()}`);
-
-  const fileExists = fs.existsSync(pathFile);
-
-  if (!fileExists) {
-    throw new Error("File not found");
-  }
-
-  return pathFile;
 };
 
 const deleteOne = async (id: string) => {
-  const file = await File.findByIdAndDelete(id);
+  try {
+    const file = await File.findByIdAndDelete(id);
 
-  if (!file) {
-    throw new Error("File not found");
+    if (!file) {
+      throw new Error("File not found");
+    }
+
+    const pathFile = path.join(
+      __dirname,
+      `../storage/${file.url.split("/").pop()}`
+    );
+
+    if (!fs.existsSync(pathFile)) {
+      throw new Error(`File not found at path`);
+    }
+
+    fs.unlinkSync(pathFile);
+
+    return file;
+  } catch (error) {
+    throw error;
   }
-
-  const pathFile = path.join(
-    __dirname,
-    `../storage/${file.url.split("/").pop()}`
-  );
-
-  if (!fs.existsSync(pathFile)) {
-    throw new Error(`File not found at path`);
-  }
-
-  fs.unlinkSync(pathFile);
-
-  return file;
 };
 
 const getOne = async (id: string) => {
-  const file = await File.findById(id);
+  try {
+    const file = await File.findById(id);
 
-  if (!file) {
-    throw new Error(`File not found for id: ${id}`);
+    if (!file) {
+      throw new Error(`File not found`);
+    }
+
+    if (file.private) {
+      throw new Error("Unauthorized access");
+    }
+
+    return file;
+  } catch (error) {
+    throw error;
   }
-
-  if (file.private) {
-    throw new Error("Unauthorized access");
-  }
-
-  return file;
 };
 
 const getPrivateFile = async (id: string, key: string | undefined) => {
-  const file = await File.findById(id);
+  try {
+    const file = await File.findById(id);
+    if (!file) {
+      throw new Error("File not found");
+    }
 
-  if (!file) {
-    throw new Error(`File not found for id: ${id}`);
+    if (file.key !== key) {
+      throw new Error("Unauthorized access");
+    }
+
+    return file;
+  } catch (error) {
+    throw error;
   }
-
-  if (file.key !== key) {
-    throw new Error("Unauthorized access");
-  }
-
-  return file;
 };
 
 export { deleteOne, download, getOne, upload, getPrivateFile };
