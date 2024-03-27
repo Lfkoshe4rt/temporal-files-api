@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IBody, IFile } from "../interfaces/interface";
 import {
   download,
@@ -8,18 +8,18 @@ import {
   getPrivateFile,
 } from "../services/file";
 
-const uploadFile = async (req: Request, res: Response) => {
+const uploadFile = async (req: Request, res: Response, next: NextFunction) => {
   const { file, body } = req;
 
   try {
     const response = await upload(file as IFile, body as IBody);
     res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
-    res.status(400).json({ status: "FAILED", message: "File is required" });
+    next(error);
   }
 };
 
-const oneFile = async (req: Request, res: Response) => {
+const oneFile = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   try {
@@ -27,11 +27,15 @@ const oneFile = async (req: Request, res: Response) => {
 
     res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
-    res.status(400).json({ status: "FAILED", message: "File not found" });
+    next(error);
   }
 };
 
-const onePrivateFile = async (req: Request, res: Response) => {
+const onePrivateFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { id } = req.params;
   const { key = "" } = req.body;
 
@@ -40,11 +44,15 @@ const onePrivateFile = async (req: Request, res: Response) => {
 
     res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
-    res.status(400).json({ status: "FAILED", message: "File not found" });
+    next(error);
   }
 };
 
-const downloadFile = async (req: Request, res: Response) => {
+const downloadFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { id } = req.params;
 
   try {
@@ -52,11 +60,11 @@ const downloadFile = async (req: Request, res: Response) => {
 
     res.download(response.toString());
   } catch (error) {
-    res.status(400).json({ status: "FAILED", message: "File not found" });
+    next(error);
   }
 };
 
-const deleteFile = async (req: Request, res: Response) => {
+const deleteFile = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   try {
@@ -64,7 +72,7 @@ const deleteFile = async (req: Request, res: Response) => {
 
     res.status(200).json({ status: "SUCCESS", data: response });
   } catch (error) {
-    res.status(400).json({ status: "FAILED", message: "File not found" });
+    next(error);
   }
 };
 
