@@ -5,8 +5,8 @@ import {
   oneFile,
   uploadFile,
   onePrivateFile,
-} from "../controllers/file";
-import { upload } from "../middlewares/fileUpload";
+} from "@/controllers/file";
+import { upload } from "@/middlewares/fileUpload";
 
 const router = Router();
 
