@@ -24,7 +24,7 @@ const upload = async (file: IFile, body: IBody) => {
       name: originalname.split(".")[0],
       size: file.size,
       key: privateFile ? randomUUID() : "Not required",
-      url: `${process.env.URL}/download/${filename}`,
+      url: `/download/${filename}`,
       permanent: !!permanentFile,
       private: !!privateFile,
       time: minutes,
@@ -50,12 +50,16 @@ const upload = async (file: IFile, body: IBody) => {
   }
 };
 
-const download = async (id: string) => {
+const download = async (id: string, key: string) => {
   try {
     const file = await File.findById(id);
 
     if (!file) {
       throw new Error(`File not found`);
+    }
+
+    if (file.private && file.key !== key) {
+      throw new Error("Unauthorized access");
     }
 
     const { url } = file;
