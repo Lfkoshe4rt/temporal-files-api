@@ -54,9 +54,10 @@ const downloadFile = async (
   next: NextFunction
 ) => {
   const { id } = req.params;
+  const { key = "" } = req.query;
 
   try {
-    const response = await download(id);
+    const response = await download(id, key.toString());
 
     res.download(response.toString());
   } catch (error) {
