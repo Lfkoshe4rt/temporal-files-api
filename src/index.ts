@@ -4,6 +4,7 @@ import express from "express";
 import morgan from "morgan";
 import conectDB from "@/config/database";
 import { errorHandlerMiddleware } from "@/middlewares/errorHandler";
+import { rateLimit } from "express-rate-limit";
 
 import file from "@/routes/file";
 
@@ -12,6 +13,13 @@ const PORT = process.env.PORT || 0;
 const app = express();
 
 conectDB();
+
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 15,
+});
+
+app.use(limiter);
 
 app.use(express.json());
 
