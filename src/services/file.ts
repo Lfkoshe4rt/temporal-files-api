@@ -9,7 +9,12 @@ import { IBody, IFile } from "@/interfaces/interface";
 const upload = async (file: IFile, body: IBody) => {
   const { convertToMilliseconds } = convert();
 
-  const { filename, originalname } = file;
+  const { filename, originalname, size } = file;
+
+  if (size > 1000000) {
+    throw new Error("File too large (max 1MB)");
+  }
+
   const { minutes = 1, privateFile = false, permanentFile = false } = body;
 
   const milliseconds = convertToMilliseconds(minutes);
@@ -20,14 +25,24 @@ const upload = async (file: IFile, body: IBody) => {
   };
 
   try {
+    // const response = await File.create({
+    //   name: originalname.split(".")[0],
+    //   size: file.size,
+    //   key: privateFile ? randomUUID() : "Not required",
+    //   url: `/download/${filename}`,
+    //   permanent: !!permanentFile,
+    //   private: !!privateFile,
+    //   time: minutes,
+    // });
+
     const response = await File.create({
       name: originalname.split(".")[0],
       size: file.size,
       key: privateFile ? randomUUID() : "Not required",
       url: `/download/${filename}`,
-      permanent: !!permanentFile,
+      permanent: false,
       private: !!privateFile,
-      time: minutes,
+      time: 1,
     });
 
     if (!permanentFile) {
