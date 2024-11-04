@@ -17,6 +17,15 @@ export const handleFileNotFoundAtPath = (res: Response) => {
     .json({ status: "ERROR", message: "File not found at path" });
 };
 
+export const handleMaxSizeError = (res: Response) => {
+  return res
+    .status(400)
+    .json({
+      status: "ERROR",
+      message: "File size exceeds the limit (max 1MB)",
+    });
+};
+
 export const handleInvalidIdError = (res: Response, error: Error) => {
   console.log(error);
   return res.status(400).json({ status: "ERROR", message: "Invalid ID" });
@@ -40,6 +49,7 @@ const errorHandlers: Record<string, (res: Response) => Response> = {
   "File not found": handleFileNotFoundError,
   "Unauthorized access": handleUnauthorizedError,
   "File not found at path": handleFileNotFoundAtPath,
+  "File too large (max 1MB)": handleMaxSizeError,
 };
 
 export const errorHandlerMiddleware = (
