@@ -12,6 +12,8 @@ const PORT = process.env.PORT || 0;
 
 const app = express();
 
+console.log(process.env.DATABASE);
+
 conectDB();
 
 const limiter = rateLimit({
